@@ -62,15 +62,33 @@ class _GameScreenState extends State<GameScreen> {
       );
     }
 
-    return SingleChildScrollView(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          FabiCharacter(mood: widget.mood, height: 220),
-          const SizedBox(height: 8),
-          _mainContent(),
-        ],
-      ),
+    // Narrow: character fixo no topo, perguntas+respostas roláveis,
+    // barra de progresso+corrigir sempre visível na parte de baixo
+    return Column(
+      children: [
+        FabiCharacter(mood: widget.mood, height: 160),
+        const SizedBox(height: 6),
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 580),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _questionRow(),
+                  const SizedBox(height: 16),
+                  _answersPanel(),
+                ],
+              ),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(0, 8, 0, 4),
+          child: _footer(),
+        ),
+      ],
     );
   }
 

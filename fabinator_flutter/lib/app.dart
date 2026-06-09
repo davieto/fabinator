@@ -151,7 +151,9 @@ class _FabiNatorAppState extends State<FabiNatorApp> {
                   child: Padding(
                     key: ValueKey(_screen),
                     padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
-                    child: Center(child: _currentScreen()),
+                    child: _screen == _Screen.game
+                        ? _currentScreen()
+                        : Center(child: _currentScreen()),
                   ),
                 ),
               ),
@@ -163,33 +165,114 @@ class _FabiNatorAppState extends State<FabiNatorApp> {
     );
   }
 
+  static const _navLinks = [
+    'Sobre o projeto', 'Como jogar', 'Professores', 'Curso de TI', 'Contato',
+  ];
+
+  void _openMenu() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (_) => Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFFFCF6EA), Color(0xFFF1E2C8)],
+          ),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: SafeArea(
+          top: false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40, height: 4,
+                margin: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: wine800.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              Image.asset('assets/logo-donaduzzi.png',
+                  height: 28,
+                  colorBlendMode: BlendMode.srcIn,
+                  color: wine800.withValues(alpha: 0.8)),
+              const SizedBox(height: 12),
+              ..._navLinks.map((l) => InkWell(
+                onTap: () => Navigator.pop(context),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 32),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.chevron_right, color: crimson, size: 18),
+                      const SizedBox(width: 10),
+                      Text(l,
+                          style: GoogleFonts.spectral(
+                              fontSize: 17, fontWeight: FontWeight.w600, color: wine800)),
+                    ],
+                  ),
+                ),
+              )),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 12, 0, 8),
+                child: Text('Projeto acadêmico · Faculdade Donaduzzi',
+                    style: GoogleFonts.poppins(
+                        fontSize: 12, color: inkSoft.withValues(alpha: 0.7))),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _topBar() {
+    final isWide = MediaQuery.sizeOf(context).width > 500;
     return SafeArea(
       bottom: false,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            _langPill(),
-            if (_screen != _Screen.home)
-              GestureDetector(
-                onTap: () => setState(() => _screen = _Screen.home),
-                child: const Wordmark(fontSize: 36),
+            _langPill(compact: !isWide),
+            if (_screen != _Screen.home) ...[
+              const SizedBox(width: 8),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => setState(() => _screen = _Screen.home),
+                  child: Center(child: Wordmark(fontSize: isWide ? 36 : 26)),
+                ),
               ),
-            Image.asset('assets/logo-donaduzzi.png',
-                height: 32,
+              const SizedBox(width: 8),
+            ] else
+              const Spacer(),
+            if (isWide)
+              Image.asset(
+                'assets/logo-donaduzzi.png',
+                height: 28,
                 colorBlendMode: BlendMode.srcIn,
-                color: Colors.white.withValues(alpha: 0.92)),
+                color: Colors.white.withValues(alpha: 0.92),
+              )
+            else
+              GestureDetector(
+                onTap: _openMenu,
+                child: Container(
+                  padding: const EdgeInsets.all(6),
+                  child: const Icon(Icons.menu, color: Colors.white, size: 26),
+                ),
+              ),
           ],
         ),
       ),
     );
   }
 
-  Widget _langPill() {
+  Widget _langPill({bool compact = false}) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+      padding: EdgeInsets.symmetric(
+          horizontal: compact ? 10 : 16, vertical: compact ? 7 : 9),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [Color(0xFFFCF6EA), Color(0xFFEBD9B6)],
@@ -208,39 +291,52 @@ class _FabiNatorAppState extends State<FabiNatorApp> {
         mainAxisSize: MainAxisSize.min,
         children: [
           const Text('🇧🇷', style: TextStyle(fontSize: 16)),
-          const SizedBox(width: 8),
-          Text('Português',
-              style: GoogleFonts.poppins(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: wine800)),
+          if (!compact) ...[
+            const SizedBox(width: 8),
+            Text('Português',
+                style: GoogleFonts.poppins(
+                    fontSize: 14, fontWeight: FontWeight.w600, color: wine800)),
+          ],
         ],
       ),
     );
   }
 
   Widget _footer() {
-    final links = ['Sobre o projeto', 'Como jogar', 'Professores', 'Curso de TI', 'Contato'];
+    final isWide = MediaQuery.sizeOf(context).width > 500;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      child: Wrap(
-        alignment: WrapAlignment.center,
-        spacing: 20,
-        runSpacing: 6,
-        children: [
-          Image.asset('assets/logo-donaduzzi.png',
-              height: 24,
-              colorBlendMode: BlendMode.srcIn,
-              color: Colors.white.withValues(alpha: 0.7)),
-          ...links.map((l) => Text(l,
-              style: GoogleFonts.poppins(
-                  fontSize: 13,
-                  color: cream.withValues(alpha: 0.7)))),
-          Text('Projeto acadêmico · Faculdade Donaduzzi',
-              style: GoogleFonts.poppins(
-                  fontSize: 13, color: cream.withValues(alpha: 0.5))),
-        ],
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      child: isWide
+          ? Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 20,
+              runSpacing: 6,
+              children: [
+                Image.asset('assets/logo-donaduzzi.png',
+                    height: 22,
+                    colorBlendMode: BlendMode.srcIn,
+                    color: Colors.white.withValues(alpha: 0.7)),
+                ..._navLinks.map((l) => Text(l,
+                    style: GoogleFonts.poppins(
+                        fontSize: 13, color: cream.withValues(alpha: 0.7)))),
+                Text('Projeto acadêmico · Faculdade Donaduzzi',
+                    style: GoogleFonts.poppins(
+                        fontSize: 13, color: cream.withValues(alpha: 0.5))),
+              ],
+            )
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset('assets/logo-donaduzzi.png',
+                    height: 20,
+                    colorBlendMode: BlendMode.srcIn,
+                    color: Colors.white.withValues(alpha: 0.6)),
+                const SizedBox(width: 10),
+                Text('Projeto acadêmico · Faculdade Donaduzzi',
+                    style: GoogleFonts.poppins(
+                        fontSize: 11, color: cream.withValues(alpha: 0.5))),
+              ],
+            ),
     );
   }
 
