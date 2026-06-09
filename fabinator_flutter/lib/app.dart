@@ -5,10 +5,13 @@ import 'engine/fabi_engine.dart';
 import 'models/game_state.dart';
 import 'models/professor.dart';
 import 'models/question.dart';
+import 'screens/como_jogar_screen.dart';
 import 'screens/game_screen.dart';
 import 'screens/guess_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/lose_screen.dart';
+import 'screens/professores_screen.dart';
+import 'screens/sobre_screen.dart';
 import 'screens/win_screen.dart';
 import 'theme/colors.dart';
 import 'widgets/background.dart';
@@ -165,8 +168,33 @@ class _FabiNatorAppState extends State<FabiNatorApp> {
     );
   }
 
+  void _navigateDirect(String label) {
+    Widget? dest;
+    if (label == 'Sobre o projeto') dest = const SobreScreen();
+    if (label == 'Como jogar')      dest = const ComoJogarScreen();
+    if (label == 'Professores')     dest = const ProfessoresScreen();
+    if (dest != null) {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => dest!));
+    }
+  }
+
+  void _navigate(String label) {
+    Navigator.pop(context);
+    Widget? dest;
+    if (label == 'Sobre o projeto') dest = const SobreScreen();
+    if (label == 'Como jogar')      dest = const ComoJogarScreen();
+    if (label == 'Professores')     dest = const ProfessoresScreen();
+    if (dest != null) {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => dest!));
+    }
+  }
+
   static const _navLinks = [
-    'Sobre o projeto', 'Como jogar', 'Professores', 'Curso de TI', 'Contato',
+    (label: 'Sobre o projeto', icon: Icons.info_outline),
+    (label: 'Como jogar',      icon: Icons.quiz_outlined),
+    (label: 'Professores',     icon: Icons.people_outline),
+    (label: 'Curso de TI',     icon: Icons.computer_outlined),
+    (label: 'Contato',         icon: Icons.mail_outline),
   ];
 
   void _openMenu() {
@@ -200,17 +228,19 @@ class _FabiNatorAppState extends State<FabiNatorApp> {
                   colorBlendMode: BlendMode.srcIn,
                   color: wine800.withValues(alpha: 0.8)),
               const SizedBox(height: 12),
-              ..._navLinks.map((l) => InkWell(
-                onTap: () => Navigator.pop(context),
+              ..._navLinks.map((item) => InkWell(
+                onTap: () => _navigate(item.label),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 32),
+                  padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 24),
                   child: Row(
                     children: [
-                      const Icon(Icons.chevron_right, color: crimson, size: 18),
-                      const SizedBox(width: 10),
-                      Text(l,
+                      Icon(item.icon, color: crimson, size: 20),
+                      const SizedBox(width: 12),
+                      Text(item.label,
                           style: GoogleFonts.spectral(
                               fontSize: 17, fontWeight: FontWeight.w600, color: wine800)),
+                      const Spacer(),
+                      const Icon(Icons.chevron_right, color: inkSoft, size: 18),
                     ],
                   ),
                 ),
@@ -316,9 +346,11 @@ class _FabiNatorAppState extends State<FabiNatorApp> {
                     height: 22,
                     colorBlendMode: BlendMode.srcIn,
                     color: Colors.white.withValues(alpha: 0.7)),
-                ..._navLinks.map((l) => Text(l,
-                    style: GoogleFonts.poppins(
-                        fontSize: 13, color: cream.withValues(alpha: 0.7)))),
+                ..._navLinks.map((item) => GestureDetector(
+                    onTap: () => _navigateDirect(item.label),
+                    child: Text(item.label,
+                        style: GoogleFonts.poppins(
+                            fontSize: 13, color: cream.withValues(alpha: 0.7))))),
                 Text('Projeto acadêmico · Faculdade Donaduzzi',
                     style: GoogleFonts.poppins(
                         fontSize: 13, color: cream.withValues(alpha: 0.5))),
