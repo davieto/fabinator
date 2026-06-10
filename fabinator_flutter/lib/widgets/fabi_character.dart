@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../engine/fabi_engine.dart';
+import '../models/fabi_mood.dart';
 
 class FabiCharacter extends StatefulWidget {
   final FabiMood mood;

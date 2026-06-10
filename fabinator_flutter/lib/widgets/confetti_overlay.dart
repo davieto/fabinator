@@ -1,25 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 
-class _Piece {
-  final double left;
-  final double delay;
-  final double dur;
-  final Color color;
-  final double rotation;
-  _Piece(Random r)
-      : left = r.nextDouble(),
-        delay = r.nextDouble() * 1.2,
-        dur = 2.4 + r.nextDouble() * 2,
-        color = _colors[r.nextInt(_colors.length)],
-        rotation = r.nextDouble() * 2 * pi;
-
-  static const _colors = [
-    Color(0xFFF6D879), Color(0xFFE0A92E), Color(0xFFC42943),
-    Color(0xFFA41E34), Color(0xFFFCF6EA), Color(0xFF6E1423),
-  ];
-}
-
 class ConfettiOverlay extends StatefulWidget {
   const ConfettiOverlay({super.key});
 
@@ -28,69 +9,91 @@ class ConfettiOverlay extends StatefulWidget {
 }
 
 class _ConfettiOverlayState extends State<ConfettiOverlay>
-    with TickerProviderStateMixin {
-  late final List<_Piece> _pieces;
-  late final List<AnimationController> _controllers;
-  late final List<Animation<double>> _anims;
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ctrl;
+  final _rng = Random();
+  late final List<_Particle> _particles;
+
+  static const _colors = [
+    Color(0xFFE0A92E), Color(0xFFF6D879), Color(0xFF7C2336),
+    Color(0xFFD42B42), Color(0xFFFCF6EA), Color(0xFF5C1626),
+  ];
 
   @override
   void initState() {
     super.initState();
-    final r = Random();
-    _pieces = List.generate(70, (_) => _Piece(r));
-    _controllers = _pieces.map((p) {
-      final ctrl = AnimationController(
-        vsync: this,
-        duration: Duration(milliseconds: (p.dur * 1000).toInt()),
-      );
-      Future.delayed(Duration(milliseconds: (p.delay * 1000).toInt()), () {
-        if (mounted) ctrl.forward();
-      });
-      return ctrl;
-    }).toList();
-    _anims = _controllers
-        .map((c) => CurvedAnimation(parent: c, curve: Curves.linear))
-        .toList();
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 4),
+    )..repeat();
+    _particles = List.generate(80, (_) => _Particle(_rng));
   }
 
   @override
   void dispose() {
-    for (final c in _controllers) { c.dispose(); }
+    _ctrl.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final h = MediaQuery.sizeOf(context).height;
-    final w = MediaQuery.sizeOf(context).width;
-    return IgnorePointer(
-      child: Stack(
-        children: List.generate(_pieces.length, (i) {
-          final p = _pieces[i];
-          return AnimatedBuilder(
-            animation: _anims[i],
-            builder: (context, child) {
-              final y = _anims[i].value * (h + 60) - 12;
-              final rot = p.rotation + _anims[i].value * 4 * pi;
-              return Positioned(
-                left: p.left * w,
-                top: y,
-                child: Transform.rotate(
-                  angle: rot,
-                  child: Container(
-                    width: 9,
-                    height: 14,
-                    decoration: BoxDecoration(
-                      color: p.color,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-              );
-            },
-          );
-        }),
+    return AnimatedBuilder(
+      animation: _ctrl,
+      builder: (ctx, _) => CustomPaint(
+        painter: _ConfettiPainter(
+          particles: _particles,
+          progress: _ctrl.value,
+          colors: _colors,
+        ),
+        size: MediaQuery.sizeOf(ctx),
       ),
     );
   }
+}
+
+class _Particle {
+  final double x, y, speed, drift, size, rotation;
+  final int colorIndex;
+
+  _Particle(Random rng)
+      : x = rng.nextDouble(),
+        y = rng.nextDouble(),
+        speed = 0.1 + rng.nextDouble() * 0.3,
+        drift = (rng.nextDouble() - 0.5) * 0.1,
+        size = 4 + rng.nextDouble() * 8,
+        colorIndex = rng.nextInt(6),
+        rotation = rng.nextDouble() * 2 * pi;
+}
+
+class _ConfettiPainter extends CustomPainter {
+  final List<_Particle> particles;
+  final double progress;
+  final List<Color> colors;
+
+  const _ConfettiPainter({
+    required this.particles,
+    required this.progress,
+    required this.colors,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    for (final p in particles) {
+      final t = (p.y + progress * p.speed) % 1.0;
+      final x = (p.x + progress * p.drift) % 1.0;
+      final paint = Paint()
+        ..color = colors[p.colorIndex].withValues(alpha: 0.8);
+      canvas.save();
+      canvas.translate(x * size.width, t * size.height);
+      canvas.rotate(p.rotation + progress * 3);
+      canvas.drawRect(
+        Rect.fromCenter(center: Offset.zero, width: p.size, height: p.size * 0.5),
+        paint,
+      );
+      canvas.restore();
+    }
+  }
+
+  @override
+  bool shouldRepaint(_ConfettiPainter old) => old.progress != progress;
 }

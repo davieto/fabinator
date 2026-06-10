@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../data/professors.dart';
+import '../data/professors_data.dart';
 import '../models/professor.dart';
 import '../theme/colors.dart';
 import '../widgets/background.dart';
@@ -9,8 +9,23 @@ import '../widgets/professor_photo.dart';
 class ProfessoresScreen extends StatelessWidget {
   const ProfessoresScreen({super.key});
 
+  static String _initials(String name) {
+    final parts = name.trim().split(RegExp(r'\s+'));
+    if (parts.length == 1) return parts[0][0].toUpperCase();
+    return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+  }
+
+  static List<Professor> get _professors => ProfessorsData.all
+      .map((m) => Professor(
+            id: m['id'] as String,
+            name: m['name'] as String,
+            initials: _initials(m['name'] as String),
+          ))
+      .toList();
+
   @override
   Widget build(BuildContext context) {
+    final profs = _professors;
     final isWide = MediaQuery.sizeOf(context).width > 600;
     return Scaffold(
       body: Stack(
@@ -30,7 +45,7 @@ class ProfessoresScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${professors.length} professores no banco de dados',
+                            '${profs.length} professores no banco de dados',
                             style: GoogleFonts.spectral(
                                 fontStyle: FontStyle.italic,
                                 color: goldLight.withValues(alpha: 0.8),
@@ -38,9 +53,9 @@ class ProfessoresScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 16),
                           isWide
-                              ? _grid(context)
+                              ? _grid(profs)
                               : Column(
-                                  children: professors
+                                  children: profs
                                       .map((p) => _profCard(p))
                                       .toList(),
                                 ),
@@ -84,7 +99,7 @@ class ProfessoresScreen extends StatelessWidget {
     );
   }
 
-  Widget _grid(BuildContext context) {
+  Widget _grid(List<Professor> profs) {
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -94,8 +109,8 @@ class ProfessoresScreen extends StatelessWidget {
         mainAxisSpacing: 16,
         childAspectRatio: 0.72,
       ),
-      itemCount: professors.length,
-      itemBuilder: (_, i) => _profCard(professors[i]),
+      itemCount: profs.length,
+      itemBuilder: (_, i) => _profCard(profs[i]),
     );
   }
 
@@ -127,69 +142,21 @@ class ProfessoresScreen extends StatelessWidget {
               padding: const EdgeInsets.all(10),
               color: wine800,
               child: Text(
-                prof.area,
+                prof.name,
                 textAlign: TextAlign.center,
-                style: GoogleFonts.poppins(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
+                style: GoogleFonts.lilitaOne(
+                    fontSize: 14,
                     color: goldLight,
                     letterSpacing: 0.5),
               ),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 20, 16, 20),
-              child: Column(
-                children: [
-                  ProfessorPhoto(prof: prof, height: 150),
-                  const SizedBox(height: 14),
-                  Text(
-                    prof.name,
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.lilitaOne(fontSize: 18, color: wine800),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    prof.tagline,
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.spectral(
-                        fontStyle: FontStyle.italic,
-                        fontSize: 13,
-                        color: inkSoft,
-                        height: 1.35),
-                  ),
-                  const SizedBox(height: 14),
-                  _attrChips(prof),
-                ],
-              ),
+              child: ProfessorPhoto(prof: prof, height: 150),
             ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _attrChips(Professor prof) {
-    final positive = prof.attributes.entries
-        .where((e) => e.value >= 0.75)
-        .map((e) => e.key)
-        .take(4)
-        .toList();
-    if (positive.isEmpty) return const SizedBox.shrink();
-    return Wrap(
-      spacing: 6,
-      runSpacing: 6,
-      alignment: WrapAlignment.center,
-      children: positive.map((attr) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-        decoration: BoxDecoration(
-          color: wine800.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(999),
-          border: Border.all(color: wine800.withValues(alpha: 0.2)),
-        ),
-        child: Text(attr,
-            style: GoogleFonts.poppins(
-                fontSize: 11, color: wine800, fontWeight: FontWeight.w500)),
-      )).toList(),
     );
   }
 }

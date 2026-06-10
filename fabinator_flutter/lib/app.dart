@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'data/questions.dart';
-import 'engine/fabi_engine.dart';
+import 'models/fabi_mood.dart';
+import 'models/answer_option.dart';
 import 'models/game_state.dart';
 import 'models/professor.dart';
 import 'models/question.dart';
@@ -13,6 +13,7 @@ import 'screens/lose_screen.dart';
 import 'screens/professores_screen.dart';
 import 'screens/sobre_screen.dart';
 import 'screens/win_screen.dart';
+import 'services/game_engine.dart';
 import 'theme/colors.dart';
 import 'widgets/background.dart';
 import 'widgets/wordmark.dart';
@@ -40,52 +41,90 @@ class _FabiNatorAppState extends State<FabiNatorApp> {
   Professor? _guess;
   final List<_HistoryEntry> _history = [];
   int _wrong = 0;
-  int _minStep = 0;
+  String? _loseMessage;
+  final _engine = GameEngine();
 
   void _startGame() {
-    final s = FabiEngine.init();
+    final s = _engine.startGame();
+    final q = _engine.nextQuestion(s);
     setState(() {
       _state = s;
-      _question = FabiEngine.pickQuestion(s);
+      _question = q;
       _mood = FabiMood.confident;
       _history.clear();
       _wrong = 0;
-      _minStep = 0;
+      _loseMessage = null;
       _guess = null;
       _screen = _Screen.game;
     });
   }
 
-  void _advance(GameState s, [double? lastValue]) {
-    final noMoreQ = questions.length - s.asked.length <= 0;
-    final readyToGuess = FabiEngine.shouldGuess(s) && s.step >= _minStep;
+  AnswerOption _toOption(double value) {
+    if (value >= 0.9) return AnswerOption.sim;
+    if (value >= 0.625) return AnswerOption.provavelmenteSim;
+    if (value >= 0.375) return AnswerOption.naoSei;
+    if (value >= 0.125) return AnswerOption.provavelmenteNao;
+    return AnswerOption.nao;
+  }
 
-    if (noMoreQ || readyToGuess) {
-      final top = FabiEngine.confidence(s).top;
-      if (top == null || top.w <= 0.0001) {
-        setState(() { _screen = _Screen.lose; _mood = FabiMood.shy; });
-        return;
-      }
+  FabiMood _moodFor(AnswerOption answer) {
+    switch (answer) {
+      case AnswerOption.sim:
+      case AnswerOption.provavelmenteSim:
+        return FabiMood.confident;
+      case AnswerOption.naoSei:
+        return FabiMood.worried;
+      case AnswerOption.provavelmenteNao:
+      case AnswerOption.nao:
+        return FabiMood.shy;
+    }
+  }
+
+  void _advance(GameState s) {
+    final next = _engine.nextQuestion(s);
+    if (next != null) {
+      setState(() { _question = next; });
+      return;
+    }
+    // nextQuestion retornou null: hora de palpitar (pergunta assinatura já foi
+    // feita, ou não existe nenhuma exclusiva do líder).
+    if (s.activeProfessors.isNotEmpty) {
+      final result = _engine.buildGuess(s);
       setState(() {
-        _guess = top.prof;
+        _guess = result.professor;
         _mood = FabiMood.confident;
         _screen = _Screen.guess;
       });
     } else {
-      setState(() {
-        _question = FabiEngine.pickQuestion(s);
-        if (lastValue != null) _mood = FabiEngine.moodFor(s, lastValue);
-      });
+      setState(() { _screen = _Screen.lose; _mood = FabiMood.shy; });
     }
   }
 
   void _onAnswer(double value) {
     final s = _state!;
     final q = _question!;
+    final answer = _toOption(value);
+
+    // Caso especial: primeira pergunta respondida com Não
+    if (q.id == 'R1' && answer == AnswerOption.nao) {
+      setState(() {
+        _loseMessage = 'Infelizmente só temos professores para adivinhar 😢';
+        _screen = _Screen.lose;
+        _mood = FabiMood.shy;
+      });
+      return;
+    }
+
     _history.add(_HistoryEntry(s, q));
-    final ns = FabiEngine.answer(s, q.id, value);
-    setState(() => _state = ns);
-    _advance(ns, value);
+    var ns = _engine.applyAnswer(s, q, answer);
+    // Sync step with questionCount so GameScreen progress dots work correctly
+    ns = ns.copyWith(step: ns.questionCount);
+
+    setState(() {
+      _state = ns;
+      _mood = _moodFor(answer);
+    });
+    _advance(ns);
   }
 
   void _onUndo() {
@@ -105,26 +144,29 @@ class _FabiNatorAppState extends State<FabiNatorApp> {
 
   void _onGuessNo() {
     final s = _state!;
-    final weights = Map<String, double>.from(s.weights);
-    weights[_guess!.id] = 0;
-    final t = weights.values.fold(0.0, (a, b) => a + b);
-    for (final id in weights.keys) {
-      weights[id] = weights[id]! / (t == 0 ? 1 : t);
-    }
-    final ns = s.copyWith(weights: weights);
-    setState(() => _state = ns);
+    // Eliminate the wrong professor from contention
+    final updatedProfs = s.professors.map((p) {
+      if (p.id == _guess!.id) {
+        return Professor(id: p.id, name: p.name, answers: p.answers, score: -100.0);
+      }
+      return p;
+    }).toList();
 
-    final remaining = FabiEngine.ranked(ns).where((r) => r.w > 0.0005).toList();
+    // Reseta signatureConfirmed para que o motor volte a pedir confirmação do novo suspeito
+    final ns = s.copyWith(professors: updatedProfs, signatureConfirmed: false);
     final newWrong = _wrong + 1;
     _wrong = newWrong;
 
-    if (newWrong >= 2 || remaining.isEmpty) {
+    if (newWrong >= 2 || ns.activeProfessors.isEmpty) {
       setState(() { _screen = _Screen.lose; _mood = FabiMood.shy; });
       return;
     }
 
-    _minStep = ns.step + 2;
-    setState(() { _mood = FabiMood.worried; _screen = _Screen.game; });
+    setState(() {
+      _state = ns;
+      _mood = FabiMood.worried;
+      _screen = _Screen.game;
+    });
     _advance(ns);
   }
 
@@ -395,7 +437,7 @@ class _FabiNatorAppState extends State<FabiNatorApp> {
       case _Screen.win:
         return WinScreen(prof: _guess!, onReplay: _startGame);
       case _Screen.lose:
-        return LoseScreen(onReplay: _startGame);
+        return LoseScreen(onReplay: _startGame, message: _loseMessage);
     }
   }
 }
