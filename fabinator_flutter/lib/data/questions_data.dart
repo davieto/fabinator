@@ -265,7 +265,7 @@ class QuestionsData {
         },
         {
           'id': 'R23',
-          'text': 'Esse professor(a) já falou sobre o DeepSeek nas aulas?',
+          'text': 'Esse professor(a) fez a gente usar o IntelliJ IDEA?',
           'category': 'definitiva',
           'minPhase': 4,
           'isFixed': false,
