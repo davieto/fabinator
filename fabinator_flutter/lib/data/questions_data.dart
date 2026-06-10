@@ -423,5 +423,29 @@ class QuestionsData {
           'isFixed': false,
           'funnyQuestion': false,
         },
+        {
+          'id': 'R53',
+          'text': 'Esse professor(a) já deu algo sobre Cisco na aula?',
+          'category': 'definitiva',
+          'minPhase': 4,
+          'isFixed': false,
+          'funnyQuestion': false,
+        },
+        {
+          'id': 'R54',
+          'text': 'Esse professor(a) já deu algo sobre CodeBlocks na aula?',
+          'category': 'definitiva',
+          'minPhase': 4,
+          'isFixed': false,
+          'funnyQuestion': false,
+        },
+        {
+          'id': 'R55',
+          'text': 'Esse professor(a) já passou o projeto AgroVision IA?',
+          'category': 'definitiva',
+          'minPhase': 4,
+          'isFixed': false,
+          'funnyQuestion': false,
+        },
       ];
 }

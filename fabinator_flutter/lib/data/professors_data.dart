@@ -15,6 +15,8 @@ class ProfessorsData {
             'R36': false, 'R38': false, 'R39': false, 'R41': false, 'R42': false,
             'R43': false, 'R44': false, 'R45': false, 'R46': false, 'R47': false,
             'R48': false, 'R50': false,
+            'R53': false, 'R54': false,
+            'R55': false,
           },
         },
         {
@@ -32,6 +34,8 @@ class ProfessorsData {
             'R36': false, 'R38': false, 'R39': false, 'R41': false, 'R42': false,
             'R43': false, 'R44': false, 'R45': false, 'R46': false, 'R47': false,
             'R48': false, 'R50': false,
+            'R53': false, 'R54': true,
+            'R55': false,
           },
         },
         {
@@ -49,6 +53,8 @@ class ProfessorsData {
             'R36': false, 'R38': false, 'R39': false, 'R41': true, 'R42': true,
             'R43': false, 'R44': false, 'R45': false, 'R46': false, 'R47': false,
             'R48': false, 'R50': false,
+            'R53': false, 'R54': false,
+            'R55': false,
           },
         },
         {
@@ -66,6 +72,8 @@ class ProfessorsData {
             'R36': false, 'R38': false, 'R39': false, 'R41': false, 'R42': false,
             'R43': true, 'R44': false, 'R45': false, 'R46': false, 'R47': false,
             'R48': false, 'R50': false,
+            'R53': false, 'R54': false,
+            'R55': false,
           },
         },
         {
@@ -83,6 +91,8 @@ class ProfessorsData {
             'R36': false, 'R38': false, 'R39': false, 'R41': false, 'R42': false,
             'R43': false, 'R44': false, 'R45': false, 'R46': false, 'R47': false,
             'R48': false, 'R50': false,
+            'R53': false, 'R54': false,
+            'R55': false,
           },
         },
         {
@@ -100,6 +110,8 @@ class ProfessorsData {
             'R36': false, 'R38': false, 'R39': false, 'R41': false, 'R42': false,
             'R43': false, 'R44': false, 'R45': false, 'R46': false, 'R47': true,
             'R48': false, 'R50': false,
+            'R53': false, 'R54': false,
+            'R55': false,
           },
         },
         {
@@ -117,6 +129,8 @@ class ProfessorsData {
             'R36': false, 'R38': false, 'R39': false, 'R41': false, 'R42': false,
             'R43': false, 'R44': false, 'R45': false, 'R46': false, 'R47': false,
             'R48': false, 'R50': false,
+            'R53': true, 'R54': false,
+            'R55': false,
           },
         },
         {
@@ -134,6 +148,8 @@ class ProfessorsData {
             'R36': true, 'R38': false, 'R39': false, 'R41': false, 'R42': false,
             'R43': false, 'R44': false, 'R45': false, 'R46': false, 'R47': false,
             'R48': false, 'R50': false,
+            'R53': false, 'R54': false,
+            'R55': false,
           },
         },
         {
@@ -151,6 +167,8 @@ class ProfessorsData {
             'R36': false, 'R38': false, 'R39': false, 'R41': false, 'R42': false,
             'R43': false, 'R44': false, 'R45': false, 'R46': false, 'R47': true,
             'R48': false, 'R50': false,
+            'R53': false, 'R54': false,
+            'R55': true,
           },
         },
         {
@@ -168,6 +186,8 @@ class ProfessorsData {
             'R36': false, 'R38': false, 'R39': false, 'R41': false, 'R42': false,
             'R43': false, 'R44': false, 'R45': false, 'R46': false, 'R47': false,
             'R48': false, 'R50': false,
+            'R53': false, 'R54': false,
+            'R55': false,
           },
         },
         {
@@ -185,6 +205,8 @@ class ProfessorsData {
             'R36': false, 'R38': false, 'R39': false, 'R41': false, 'R42': false,
             'R43': false, 'R44': false, 'R45': false, 'R46': true, 'R47': false,
             'R48': true, 'R50': false,
+            'R53': false, 'R54': false,
+            'R55': false,
           },
         },
         {
@@ -202,6 +224,8 @@ class ProfessorsData {
             'R36': false, 'R38': false, 'R39': false, 'R41': false, 'R42': false,
             'R43': false, 'R44': false, 'R45': false, 'R46': false, 'R47': false,
             'R48': false, 'R50': false,
+            'R53': false, 'R54': false,
+            'R55': false,
           },
         },
         {
@@ -219,6 +243,8 @@ class ProfessorsData {
             'R36': false, 'R38': false, 'R39': true, 'R41': false, 'R42': false,
             'R43': false, 'R44': false, 'R45': false, 'R46': false, 'R47': false,
             'R48': false, 'R50': false,
+            'R53': false, 'R54': false,
+            'R55': false,
           },
         },
         {
@@ -236,6 +262,8 @@ class ProfessorsData {
             'R36': false, 'R38': false, 'R39': false, 'R41': false, 'R42': false,
             'R43': false, 'R44': false, 'R45': true, 'R46': false, 'R47': false,
             'R48': false, 'R50': true,
+            'R53': false, 'R54': false,
+            'R55': false,
           },
         },
         {
@@ -253,6 +281,8 @@ class ProfessorsData {
             'R36': false, 'R38': true, 'R39': false, 'R41': false, 'R42': false,
             'R43': false, 'R44': false, 'R45': false, 'R46': false, 'R47': false,
             'R48': false, 'R50': false,
+            'R53': false, 'R54': false,
+            'R55': false,
           },
         },
         {
@@ -270,6 +300,8 @@ class ProfessorsData {
             'R36': false, 'R38': false, 'R39': false, 'R41': false, 'R42': false,
             'R43': false, 'R44': false, 'R45': false, 'R46': false, 'R47': false,
             'R48': false, 'R50': false,
+            'R53': false, 'R54': false,
+            'R55': false,
           },
         },
       ];
