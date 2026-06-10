@@ -1,74 +1,80 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import '../theme/colors.dart';
 
 enum BubbleSide { left, right }
 
 class SpeechBubble extends StatelessWidget {
   final BubbleSide side;
   final Widget child;
-
   const SpeechBubble({super.key, required this.side, required this.child});
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(
-      painter: _TailPainter(side),
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 320),
-        decoration: BoxDecoration(
-          color: panel,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: const Color(0xFFA9741A).withValues(alpha: 0.3)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.4),
-              blurRadius: 20,
-              offset: const Offset(0, 8),
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 260),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xFFFCF6EA), Color(0xFFEBD9B6)],
+              ),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: const Color(0xFFA9741A).withValues(alpha: 0.4),
+                width: 1.5,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.3),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
+                ),
+              ],
             ),
-          ],
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        child: DefaultTextStyle(
-          style: GoogleFonts.spectral(fontSize: 17, color: ink, height: 1.45),
-          child: child,
-        ),
+            child: child,
+          ),
+          Positioned(
+            top: 20,
+            left: side == BubbleSide.right ? null : -10,
+            right: side == BubbleSide.right ? -10 : null,
+            child: CustomPaint(
+              size: const Size(12, 18),
+              painter: _TrianglePainter(side: side),
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class _TailPainter extends CustomPainter {
+class _TrianglePainter extends CustomPainter {
   final BubbleSide side;
-  _TailPainter(this.side);
+  const _TrianglePainter({required this.side});
 
   @override
   void paint(Canvas canvas, Size size) {
-    final fill = Paint()
-      ..color = panel
+    final paint = Paint()
+      ..color = const Color(0xFFEBD9B6)
       ..style = PaintingStyle.fill;
-    final border = Paint()
-      ..color = const Color(0xFFA9741A).withValues(alpha: 0.3)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1;
     final path = Path();
     if (side == BubbleSide.right) {
-      path
-        ..moveTo(size.width, 30)
-        ..lineTo(size.width + 18, 44)
-        ..lineTo(size.width, 58)
-        ..close();
+      path.moveTo(0, 0);
+      path.lineTo(size.width, size.height / 2);
+      path.lineTo(0, size.height);
     } else {
-      path
-        ..moveTo(0, 30)
-        ..lineTo(-18, 44)
-        ..lineTo(0, 58)
-        ..close();
+      path.moveTo(size.width, 0);
+      path.lineTo(0, size.height / 2);
+      path.lineTo(size.width, size.height);
     }
-    canvas.drawPath(path, fill);
-    canvas.drawPath(path, border);
+    path.close();
+    canvas.drawPath(path, paint);
   }
 
   @override
-  bool shouldRepaint(_) => false;
+  bool shouldRepaint(_TrianglePainter old) => old.side != side;
 }
