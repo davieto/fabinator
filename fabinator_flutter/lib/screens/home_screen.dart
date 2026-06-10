@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../engine/fabi_engine.dart';
+import '../models/fabi_mood.dart';
 import '../theme/colors.dart';
 import '../widgets/fabi_character.dart';
 import '../widgets/speech_bubble.dart';
@@ -38,42 +38,50 @@ class _HomeScreenState extends State<HomeScreen> {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        Row(
+        Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SpeechBubble(
-              side: BubbleSide.right,
-              child: RichText(
-                text: TextSpan(
-                  style: GoogleFonts.spectral(fontSize: 17, color: ink, height: 1.45),
-                  children: [
-                    const TextSpan(text: 'Olá, eu sou a '),
-                    TextSpan(text: 'FabiNator', style: GoogleFonts.spectral(fontWeight: FontWeight.bold)),
-                    const TextSpan(text: ' ✨'),
-                  ],
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SpeechBubble(
+                  side: BubbleSide.right,
+                  child: RichText(
+                    text: TextSpan(
+                      style: GoogleFonts.spectral(fontSize: 17, color: ink, height: 1.45),
+                      children: [
+                        const TextSpan(text: 'Olá, eu sou a '),
+                        TextSpan(text: 'FabiNator', style: GoogleFonts.spectral(fontWeight: FontWeight.bold)),
+                        const TextSpan(text: ' ✨'),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            const SizedBox(width: 24),
-            FabiCharacter(mood: FabiMood.confident, height: 420),
-            const SizedBox(width: 24),
-            SpeechBubble(
-              side: BubbleSide.left,
-              child: RichText(
-                text: TextSpan(
-                  style: GoogleFonts.spectral(fontSize: 17, color: ink, height: 1.45),
-                  children: [
-                    const TextSpan(text: 'Pense em um '),
-                    TextSpan(text: 'professor', style: GoogleFonts.spectral(fontWeight: FontWeight.bold)),
-                    const TextSpan(text: ' que já te deu aula.\nEu vou tentar adivinhar quem é!'),
-                  ],
+                const SizedBox(width: 24),
+                FabiCharacter(mood: FabiMood.confident, height: 420),
+                const SizedBox(width: 24),
+                SpeechBubble(
+                  side: BubbleSide.left,
+                  child: RichText(
+                    text: TextSpan(
+                      style: GoogleFonts.spectral(fontSize: 17, color: ink, height: 1.45),
+                      children: [
+                        const TextSpan(text: 'Pense em um '),
+                        TextSpan(text: 'professor', style: GoogleFonts.spectral(fontWeight: FontWeight.bold)),
+                        const TextSpan(text: ' que já te deu aula.\nEu vou tentar adivinhar quem é!'),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
+            const SizedBox(height: 28),
+            _playButton(),
+            const SizedBox(height: 16),
+            _stats(),
           ],
         ),
-        // last games pill or card
         Positioned(
           top: 0,
           left: 0,
@@ -148,10 +156,14 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _stats() {
     return Column(
       children: [
-        Text('137 alunos estão jogando agora.',
-            style: GoogleFonts.spectral(color: goldLight, fontSize: 15, height: 1.6)),
-        Text('8 942 partidas jogadas hoje na Donaduzzi.',
-            style: GoogleFonts.spectral(color: goldLight, fontSize: 15, height: 1.6)),
+        Text('Consigo adivinhar seu professor em até 15 perguntas.',
+            style: GoogleFonts.spectral(color: goldLight, fontSize: 15, height: 1.6),
+            textAlign: TextAlign.center),
+        Text('Topa o desafio?',
+            style: GoogleFonts.spectral(
+                color: goldLight, fontSize: 15, height: 1.6,
+                fontStyle: FontStyle.italic),
+            textAlign: TextAlign.center),
       ],
     );
   }

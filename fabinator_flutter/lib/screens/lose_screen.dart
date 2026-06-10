@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../engine/fabi_engine.dart';
+import '../models/fabi_mood.dart';
 import '../theme/colors.dart';
 import '../widgets/fabi_character.dart';
 
 class LoseScreen extends StatefulWidget {
   final VoidCallback onReplay;
+  final String? message;
 
-  const LoseScreen({super.key, required this.onReplay});
+  const LoseScreen({super.key, required this.onReplay, this.message});
 
   @override
   State<LoseScreen> createState() => _LoseScreenState();
@@ -52,6 +53,7 @@ class _LoseScreenState extends State<LoseScreen> {
   }
 
   Widget _card() {
+    final customMsg = widget.message;
     return ConstrainedBox(
       constraints: const BoxConstraints(maxWidth: 480),
       child: Container(
@@ -72,49 +74,70 @@ class _LoseScreenState extends State<LoseScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _panelHead('Você me venceu… 😳'),
+              customMsg != null
+                  ? _panelHead('Ops! 😅')
+                  : _panelHead('Você me venceu… 😳'),
               Padding(
                 padding: const EdgeInsets.all(24),
-                child: Column(
-                  children: [
-                    Text(
-                      'Não consegui adivinhar dessa vez!\nMe conta: ',
-                      style: GoogleFonts.spectral(
-                          fontSize: 17, color: ink, height: 1.5),
-                      textAlign: TextAlign.center,
-                    ),
-                    Text(
-                      'quem era o seu professor?',
-                      style: GoogleFonts.spectral(
-                          fontSize: 17, fontWeight: FontWeight.bold, color: ink),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 18),
-                    if (!_sent) ...[
-                      _inputRow(),
-                      const SizedBox(height: 20),
-                    ] else ...[
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 20),
-                        child: Text(
-                          'Obrigada! Vou aprender com ${_ctrl.text} para a próxima. 💪',
-                          style: GoogleFonts.spectral(
-                            fontStyle: FontStyle.italic,
-                            color: crimson,
-                            fontSize: 16,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ],
-                    _playAgainBtn(),
-                  ],
-                ),
+                child: customMsg != null
+                    ? _customContent(customMsg)
+                    : _defaultContent(),
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _customContent(String msg) {
+    return Column(
+      children: [
+        Text(
+          msg,
+          style: GoogleFonts.spectral(fontSize: 17, color: ink, height: 1.5),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 24),
+        _playAgainBtn(),
+      ],
+    );
+  }
+
+  Widget _defaultContent() {
+    return Column(
+      children: [
+        Text(
+          'Não consegui adivinhar dessa vez!\nMe conta: ',
+          style: GoogleFonts.spectral(fontSize: 17, color: ink, height: 1.5),
+          textAlign: TextAlign.center,
+        ),
+        Text(
+          'quem era o seu professor?',
+          style: GoogleFonts.spectral(
+              fontSize: 17, fontWeight: FontWeight.bold, color: ink),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 18),
+        if (!_sent) ...[
+          _inputRow(),
+          const SizedBox(height: 20),
+        ] else ...[
+          Padding(
+            padding: const EdgeInsets.only(bottom: 20),
+            child: Text(
+              'Obrigada! Vou aprender com ${_ctrl.text} para a próxima. 💪',
+              style: GoogleFonts.spectral(
+                fontStyle: FontStyle.italic,
+                color: crimson,
+                fontSize: 16,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
+        _playAgainBtn(),
+      ],
     );
   }
 

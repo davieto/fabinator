@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../engine/fabi_engine.dart';
+import '../models/fabi_mood.dart';
 import '../models/game_state.dart';
 import '../models/question.dart';
 import '../theme/colors.dart';

@@ -11,12 +11,9 @@ class FabiNatorRoot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'FabiNator · Faculdade Donaduzzi',
+      title: 'FabiNator',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF5C1626)),
-        useMaterial3: true,
-      ),
+      theme: ThemeData(useMaterial3: true),
       home: const FabiNatorApp(),
     );
   }
