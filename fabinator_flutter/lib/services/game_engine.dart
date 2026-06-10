@@ -176,18 +176,37 @@ class GameEngine {
     );
   }
 
+  // Razão mínima de pontuação entre 1º e 2º colocado para arriscar um palpite.
+  // "Quase o dobro": o líder precisa ter ~2x a certeza do segundo.
+  static const double _guessRatio = 1.8;
+
   bool shouldGuess(GameState state) {
     if (state.signatureConfirmed) return true;
 
-    final gap = state.leaderGap;
+    final active = state.activeProfessors; // já ordenado por score desc
     final count = state.questionCount;
 
-    if (gap >= 16.0 && count >= 8) return true;   // confiança alta
-    if (gap >= 10.0 && count >= 10) return true;  // confiança média
-    if (count >= 15) return true;                  // esgotamento
+    // Esgotamento: bateu o teto de perguntas ou não há mais o que perguntar.
+    if (count >= 15) return true;
     if (_available(state).isEmpty && count > 0) return true;
 
-    return false;
+    // Nunca palpita cedo demais nem sem um candidato.
+    if (count < 6 || active.isEmpty) return false;
+
+    // Sobrou só um candidato ativo → é ele.
+    if (active.length == 1) return true;
+
+    final leaderScore = active[0].score;
+    final secondScore = active[1].score;
+
+    // Líder ainda sem certeza positiva suficiente → continua perguntando.
+    if (leaderScore < 8.0) return false;
+
+    // Segundo colocado já zerado/negativo → líder isolado, pode palpitar.
+    if (secondScore <= 0) return true;
+
+    // Só palpita quando a certeza do líder é quase o dobro da do 2º.
+    return leaderScore >= _guessRatio * secondScore;
   }
 
   GuessResult buildGuess(GameState state) {
@@ -196,13 +215,17 @@ class GameEngine {
       ..sort((a, b) => b.score.compareTo(a.score));
 
     final prof = active.isNotEmpty ? active.first : all.first;
-    final gap = state.leaderGap;
     final count = state.questionCount;
 
+    final leaderScore = active.isNotEmpty ? active[0].score : 0.0;
+    final secondScore = active.length >= 2 ? active[1].score : 0.0;
+    // Razão de certeza entre 1º e 2º (infinita quando o 2º está zerado/negativo).
+    final ratio = secondScore > 0 ? leaderScore / secondScore : double.infinity;
+
     final String level;
-    if (state.signatureConfirmed || (gap >= 16.0 && count >= 8)) {
+    if (state.signatureConfirmed || ratio >= 2.5) {
       level = 'alta';
-    } else if (gap >= 10.0 && count >= 10) {
+    } else if (ratio >= _guessRatio) {
       level = 'media';
     } else {
       level = 'baixa';
