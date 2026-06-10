@@ -265,7 +265,7 @@ class QuestionsData {
         },
         {
           'id': 'R23',
-          'text': 'Esse professor(a) é o menor professor da faculdade?',
+          'text': 'Esse professor(a) já falou sobre o DeepSeek nas aulas?',
           'category': 'definitiva',
           'minPhase': 4,
           'isFixed': false,
@@ -273,7 +273,7 @@ class QuestionsData {
         },
         {
           'id': 'R24',
-          'text': 'Esse professor(a) dá aula de banco de dados?',
+          'text': 'Esse professor(a) já falou sobre SELECT nas aulas para alguma turma?',
           'category': 'definitiva',
           'minPhase': 4,
           'isFixed': false,
@@ -353,7 +353,7 @@ class QuestionsData {
         },
         {
           'id': 'R41',
-          'text': 'Esse professor(a) dá aula de desenvolvimento mobile?',
+          'text': 'Esse professor(a) já apresentou Flutter?',
           'category': 'definitiva',
           'minPhase': 4,
           'isFixed': false,
@@ -377,7 +377,7 @@ class QuestionsData {
         },
         {
           'id': 'R44',
-          'text': 'Esse professor(a) já deu aula de UX?',
+          'text': 'Esse professor(a) já trabalhou na Ambev?',
           'category': 'definitiva',
           'minPhase': 4,
           'isFixed': false,
@@ -385,7 +385,7 @@ class QuestionsData {
         },
         {
           'id': 'R45',
-          'text': 'Esse professor(a) lecionou testes de software?',
+          'text': 'Esse professor(a) ensinou sobre Testes Automatizados?',
           'category': 'definitiva',
           'minPhase': 4,
           'isFixed': false,
@@ -401,7 +401,7 @@ class QuestionsData {
         },
         {
           'id': 'R47',
-          'text': 'Esse professor(a) dá aula de Tecnologias Emergentes?',
+          'text': 'Esse professor(a) trabalha na Maxicon?',
           'category': 'definitiva',
           'minPhase': 4,
           'isFixed': false,
