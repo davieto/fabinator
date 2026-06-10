@@ -22,15 +22,18 @@ class GameState {
 
   List<Professor> get activeProfessors =>
       professors.where((p) => p.isActive).toList()
-        ..sort((a, b) => b.score.compareTo(a.score));
+        ..sort((a, b) => b.probability.compareTo(a.probability));
 
   Professor? get leader =>
       activeProfessors.isNotEmpty ? activeProfessors.first : null;
 
-  double get leaderGap {
+  // Razão entre a probabilidade do líder e a do segundo colocado.
+  double get leaderRatio {
     final active = activeProfessors;
     if (active.length < 2) return double.infinity;
-    return active[0].score - active[1].score;
+    final second = active[1].probability;
+    if (second <= 0) return double.infinity;
+    return active[0].probability / second;
   }
 
   GameState copyWith({

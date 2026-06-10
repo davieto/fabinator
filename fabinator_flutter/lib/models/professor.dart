@@ -6,7 +6,8 @@ class Professor {
   final String tagline;
   final Map<String, double> attributes;
   final Map<String, bool> answers;
-  double score;
+  double probability;
+  bool eliminated;
 
   Professor({
     required this.id,
@@ -16,7 +17,8 @@ class Professor {
     this.tagline = '',
     this.attributes = const <String, double>{},
     this.answers = const <String, bool>{},
-    this.score = 0.0,
+    this.probability = 0.0,
+    this.eliminated = false,
   });
 
   double attr(String qid) {
@@ -25,5 +27,8 @@ class Professor {
     return 0.5;
   }
 
-  bool get isActive => score > -2.0;
+  // Eliminação é definitiva: uma vez descartado, o professor não volta a
+  // entrar na renormalização de probabilidade mesmo que sua chance relativa
+  // pudesse subir depois.
+  bool get isActive => !eliminated;
 }

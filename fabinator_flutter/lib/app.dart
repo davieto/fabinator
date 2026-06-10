@@ -144,16 +144,8 @@ class _FabiNatorAppState extends State<FabiNatorApp> {
 
   void _onGuessNo() {
     final s = _state!;
-    // Eliminate the wrong professor from contention
-    final updatedProfs = s.professors.map((p) {
-      if (p.id == _guess!.id) {
-        return Professor(id: p.id, name: p.name, answers: p.answers, score: -100.0);
-      }
-      return p;
-    }).toList();
-
-    // Reseta signatureConfirmed para que o motor volte a pedir confirmação do novo suspeito
-    final ns = s.copyWith(professors: updatedProfs, signatureConfirmed: false);
+    // Elimina o professor do palpite errado e renormaliza as probabilidades dos demais
+    final ns = _engine.eliminateGuess(s, _guess!.id);
     final newWrong = _wrong + 1;
     _wrong = newWrong;
 
